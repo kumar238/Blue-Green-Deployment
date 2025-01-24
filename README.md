@@ -58,14 +58,10 @@ The goal of this project is to implement a Blue-Green deployment strategy for an
 ---
 ### Application Architecture:
 
-
-![Application-Dashboard](https://github.com/user-attachments/assets/8f3c96e1-d627-4477-9026-c4a3b3607fdb)
-
----
-
 - Frontend: Java-based application running in Docker containers.
 - Database: MySQL running in a container or managed through AWS RDS.
 
+![Application-Dashboard](https://github.com/user-attachments/assets/8f3c96e1-d627-4477-9026-c4a3b3607fdb)
 ----
 ### Troubleshooting:
 
@@ -75,4 +71,4 @@ The goal of this project is to implement a Blue-Green deployment strategy for an
 2.Docker Daemon Permission Issue: The Docker Daemon was not running, and I encountered a "permission denied" error. The issue was resolved by restarting the Docker service and adding Jenkins to the Docker group to grant it the necessary 
   permissions.
 
-3. Docker Push Error: I mistakenly included the -t flag while attempting to push a Docker image, which is unnecessary for the docker push command. Removing the flag resolved the issue.
+3.Docker Push Error: I mistakenly included the -t flag while attempting to push a Docker image, which is unnecessary for the docker push command. Removing the flag resolved the issue.
