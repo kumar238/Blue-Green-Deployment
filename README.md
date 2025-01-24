@@ -1,16 +1,19 @@
 ## Project Title: Deployment Strategy using Blue-Green Deployment
 ![Architecture-blue-green](https://github.com/user-attachments/assets/2790a8da-29b8-48a6-b971-13078b195ae8)
 
+---
+
 ### What is Blue-Green Deployment?
 Blue-Green deployment is a software release management strategy that reduces downtime and mitigates deployment risks. In this strategy, two production environments are maintained:
 
 - Blue Environment: The current live application is running in the Blue environment.
 - Green Environment: The new version of the application is deployed in the Green environment.
 After the new version is deployed and tested in the Green environment, traffic is shifted from the Blue to the Green environment using a load balancer. If any issues arise after the switch, traffic can be rolled back to the Blue environment. This strategy allows for zero downtime during deployments and ensures a safe and efficient rollback mechanism.
-
+---
 ### Project Summary:
 The goal of this project is to implement a Blue-Green deployment strategy for an application consisting of a Java frontend and a MySQL database. The application will be deployed on AWS EKS with Docker containers for both the frontend and database services.
 
+---
 ### Key Features:
 - Two environments: Blue (current live) and Green (new release).
 - Load balancer to switch traffic between Blue and Green environments.
@@ -18,6 +21,7 @@ The goal of this project is to implement a Blue-Green deployment strategy for an
 - Jenkins for Continuous Integration and Continuous Deployment (CI/CD).
 - SonarQube for code quality analysis.
 
+---
 ### Project Requirements:
 
 - AWS Infrastructure:
@@ -41,7 +45,7 @@ The goal of this project is to implement a Blue-Green deployment strategy for an
   - Sonatype Nexus for managing Maven dependencies.
   - Maven for building Java-based applications.
   - Trivy for security scanning of Docker images.
-
+---
 ### Dependencies Tools and Packages:
 
   - Docker: Containerization of the frontend and backend services.
@@ -51,12 +55,18 @@ The goal of this project is to implement a Blue-Green deployment strategy for an
   - Sonatype Nexus: For artifact storage and management.
   - Maven: For building and packaging the Java application.
   - Trivy: For scanning Docker images for vulnerabilities.
-
+---
 ### Application Architecture:
+
+
+![Application-Dashboard](https://github.com/user-attachments/assets/8f3c96e1-d627-4477-9026-c4a3b3607fdb)
+
+---
 
 - Frontend: Java-based application running in Docker containers.
 - Database: MySQL running in a container or managed through AWS RDS.
 
+----
 ### Troubleshooting:
 
 1.SonarQube Analysis: During initial configuration, I misconfigured the analysis settings by forgetting to add the . symbol, which caused the Java files in the current directory to be missed. This was fixed by adjusting the configuration file to 
