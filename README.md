@@ -1,4 +1,5 @@
 ## Project Title: Deployment Strategy using Blue-Green Deployment
+![Architecture-blue-green](https://github.com/user-attachments/assets/2790a8da-29b8-48a6-b971-13078b195ae8)
 
 ### What is Blue-Green Deployment?
 Blue-Green deployment is a software release management strategy that reduces downtime and mitigates deployment risks. In this strategy, two production environments are maintained:
@@ -20,8 +21,7 @@ The goal of this project is to implement a Blue-Green deployment strategy for an
 ### Project Requirements:
 
 - AWS Infrastructure:
-
- - EKS Cluster with 3 node groups of x.large instance types for application hosting.
+   - EKS Cluster with 3 node groups of x.large instance types for application hosting.
  - EC2 Instances:
    - 1 server instance for hosting the application.
    - 1 Jenkins instance for CI/CD automation.
@@ -59,8 +59,10 @@ The goal of this project is to implement a Blue-Green deployment strategy for an
 
 ### Troubleshooting:
 
-1.SonarQube Analysis: During initial configuration, I misconfigured the analysis settings by forgetting to add the . symbol, which caused the Java files in the current directory to be missed. This was fixed by adjusting the configuration file to include the correct directory.
+1.SonarQube Analysis: During initial configuration, I misconfigured the analysis settings by forgetting to add the . symbol, which caused the Java files in the current directory to be missed. This was fixed by adjusting the configuration file to 
+  include the correct directory.
 
-2.Docker Daemon Permission Issue: The Docker Daemon was not running, and I encountered a "permission denied" error. The issue was resolved by restarting the Docker service and adding Jenkins to the Docker group to grant it the necessary permissions.
+2.Docker Daemon Permission Issue: The Docker Daemon was not running, and I encountered a "permission denied" error. The issue was resolved by restarting the Docker service and adding Jenkins to the Docker group to grant it the necessary 
+  permissions.
 
 3. Docker Push Error: I mistakenly included the -t flag while attempting to push a Docker image, which is unnecessary for the docker push command. Removing the flag resolved the issue.
