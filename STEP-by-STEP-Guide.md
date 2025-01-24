@@ -195,3 +195,83 @@
   aws eks --region ap-south-1 update-kubeconfig --name devopsshack-cluster
   ```
 
+---
+
+### 17) Create Service Account and Follow the Repository File (Setup-Rbac.md)
+
+- Create a namespace:
+  ```bash
+  kubectl create ns webapps
+  ```
+- Create the service account:
+  ```bash
+  nano sa.yml
+  ```
+  - Add the configuration from `Setup-RBAC.md`.
+  ```bash
+  kubectl apply -f sa.yml
+  ```
+
+---
+
+### 18) Create a Role
+
+- Create the role configuration:
+  ```bash
+  nano role.yml
+  ```
+  - Add the configuration from the documentation.
+  ```bash
+  kubectl apply -f role.yml
+  ```
+
+---
+
+### 19) Bind the Role to the Service Account
+
+- Create the role binding configuration:
+  ```bash
+  nano rolebind.yml
+  ```
+  - Add the configuration from the documentation.
+  ```bash
+  kubectl apply -f rolebind.yml
+  ```
+
+---
+
+### 20) Create a Secret Token (Follow Documentation)
+
+- Create the secret configuration file:
+  ```bash
+  nano sec.yml
+  ```
+  ```bash
+  kubectl apply -f sec.yml -n webapps
+  ```
+
+---
+
+### 21) Create a Token from Secret for Authentication
+
+- Describe the secret to generate a token:
+  ```bash
+  kubectl describe secret mysecretname -n webapps
+  ```
+
+---
+
+### 22) Configure Jenkins Plugins
+
+- Go to **Manage Jenkins** and install the following plugins:
+  - SonarQube Scanner
+  - Config File Provider
+  - Maven Integration
+  - Pipeline Maven Integration
+  - Stage Pipeline (Stage View)
+  - Docker Pipeline
+  - Kubernetes
+  - Kubernetes Client API
+  - Kubernetes Credentials
+  - Kubernetes CLI
+
