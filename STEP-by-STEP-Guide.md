@@ -1,108 +1,197 @@
-### 1) Create a EC2 instance
-      - Name: Server
-      - Ubuntu Server 24.04
-      - Instance Type: t2.medium
-      - Security Group: Primary-SG
-      - EBS Volume: 20 GB
-      
+### Step-by-Step Guide for Blue-Green Deployment Using EKS
+
+---
+
+### 1) Create an EC2 Instance
+
+- **Name**: Server
+- **Operating System**: Ubuntu Server 24.04
+- **Instance Type**: t2.medium
+- **Security Group**: Primary-SG
+- **EBS Volume**: 20 GB
+
+---
+
 ### 2) SSH to Server (EC2)
-      - Update repo: sudo apt update
 
-### 3) Install the AWS CLI from Amazon documentation  
-      - Create IAM user and copy the access key and secret key
-      - Configure the AWS using: 
-           Command: ```aws configure```
-      - configured the access key, secret key and region
+- Update the repository:
+  ```bash
+  sudo apt update
+  ```
 
-### 4) Install Terrform for EKS cluster provision (IaC)
-      - Install: sudo snap install terraform --classic
-      - Clone the repository: 
-      ```git clone https://github.com/Sudoharry/Blue-Green-Deployment.git```
+---
 
-### 5) Change directory
-      ``` cd Blue-Green-Deployment ```
-      ``` cd Cluster ```
+### 3) Install the AWS CLI from Amazon Documentation
 
-### 6) Provision the EKS cluster now,
-      Note: Change the region and go to variable.tf and within that change the secret key name. Then, initialize the terraform init
-      ```
-      - terraform init
-      - terraform plan
-      - terraform apply -auto-approve
-      ```
-### 7) Launch 3 EC2 server
+- **Create an IAM User**:
+  - Copy the access key and secret key.
 
-      - EBS: 25GB each
-      - Instance type: t2.medium
+- **Configure AWS CLI**:
+  ```bash
+  aws configure
+  ```
+  - Provide the access key, secret key, and region when prompted.
 
-      - Name:
-      1) Jenkins
-      2) SonarQube
-      3) Nexus
+---
 
-      - Security group: 9000, 8081, 8080
-      
-### 8) Go to Jenkins Server
+### 4) Install Terraform for EKS Cluster Provisioning (IaC)
 
-     - Update repo: ``` sudo apt update ```
-     - Install Jenkins- Follow the official document on Jenkins.
-     
-### 9) Go to Nexus Server
+- Install Terraform:
+  ```bash
+  sudo snap install terraform --classic
+  ```
 
-     - Update repo : ``` sudo apt update ```
-     - Install docker - ``` sudo apt install docker-io -y ```
-        ``` sudo usermod -aG docker ubuntu ```
-        ``` newgrp docker ```
-    - Run the docker: 
-      ``` docker run -d -p 8081:8081 sonatype/nexus3
-    - Check docker ps  (Is docker is runnnig or not)  
+- Clone the repository:
+  ```bash
+  git clone https://github.com/Sudoharry/Blue-Green-Deployment.git
+  ```
 
-### 10) Go to SonarQube Server
+---
 
-     - Update repo : ``` sudo apt update ```
-     - Install docker - ``` sudo apt install docker-io -y ```
-        ``` sudo usermod -aG docker ubuntu ```
-    - Run the docker: 
-      ``` docker run -d -p 9000:9000 sonarqube:lts-community ```
+### 5) Change Directory
 
-### 11) Go to Nexus Server
-      
-      - For password:
-       ``` docker exec -it <container id> /bin/bash
-      ``` bash
-          cd sonatype-work
-          ls
-          cd nexus3/
-          ls
-          cat admin.password
-      ``` 
-      - Use this password to login into Nexus server
+- Navigate to the cluster directory:
+  ```bash
+  cd Blue-Green-Deployment
+  cd Cluster
+  ```
 
- ### 12) Go to Jenkins Server
+---
 
-       - Install docker from official website(search on google docker install on ubuntu)
+### 6) Provision the EKS Cluster
 
-       ``` sudo usermod -aG docker jenkins
-       ``` sudo systemctl restart jenkins ```
-       
-### 13) On Jenkins Server install Trivy
+- **Note**: Change the region and update `variable.tf` with the correct secret key name.
 
-        - Go to Trivy installation for Ubuntu (Aquasecurity)
-        - Follow the steps and Install it.
+- Initialize and apply Terraform:
+  ```bash
+  terraform init
+  terraform plan
+  terraform apply -auto-approve
+  ```
 
-### 14) On Jenkins Server install kubectl
-        
-        - ```sudo snap install kubectl --classic ```
+---
 
-### 15) On Server-Instance
+### 7) Launch 3 EC2 Servers
 
-       ``` sudo snap install kubectl --classic ```
-       
-### 16) On Server
+- **EBS Volume**: 25 GB each
+- **Instance Type**: t2.medium
+- **Names**:
+  1. Jenkins
+  2. SonarQube
+  3. Nexus
+- **Security Group Ports**: 9000, 8081, 8080
 
-        ``` aws eks --region ap-south-1 update-kubeconfig --name devopsshack-cluster ```
-        
-     
+---
 
-     
-      
+### 8) Configure Jenkins Server
+
+- SSH into the Jenkins server.
+- Update the repository:
+  ```bash
+  sudo apt update
+  ```
+- Install Jenkins by following the [official Jenkins documentation](https://www.jenkins.io/doc/).
+
+---
+
+### 9) Configure Nexus Server
+
+- SSH into the Nexus server.
+- Update the repository:
+  ```bash
+  sudo apt update
+  ```
+- Install Docker:
+  ```bash
+  sudo apt install docker.io -y
+  sudo usermod -aG docker ubuntu
+  newgrp docker
+  ```
+- Run the Nexus container:
+  ```bash
+  docker run -d -p 8081:8081 sonatype/nexus3
+  ```
+- Verify if Docker is running:
+  ```bash
+  docker ps
+  ```
+
+---
+
+### 10) Configure SonarQube Server
+
+- SSH into the SonarQube server.
+- Update the repository:
+  ```bash
+  sudo apt update
+  ```
+- Install Docker:
+  ```bash
+  sudo apt install docker.io -y
+  sudo usermod -aG docker ubuntu
+  ```
+- Run the SonarQube container:
+  ```bash
+  docker run -d -p 9000:9000 sonarqube:lts-community
+  ```
+
+---
+
+### 11) Retrieve Nexus Password
+
+- Get the password for Nexus:
+  ```bash
+  docker exec -it <container_id> /bin/bash
+  cd sonatype-work
+  cd nexus3
+  cat admin.password
+  ```
+- Use this password to log in to the Nexus server.
+
+---
+
+### 12) Install Docker on Jenkins Server
+
+- Install Docker:
+  ```bash
+  sudo apt install docker.io -y
+  ```
+- Add Jenkins to the Docker group:
+  ```bash
+  sudo usermod -aG docker jenkins
+  sudo systemctl restart jenkins
+  ```
+
+---
+
+### 13) Install Trivy on Jenkins Server
+
+- Follow the [Trivy installation guide](https://aquasecurity.github.io/trivy/) for Ubuntu.
+
+---
+
+### 14) Install kubectl on Jenkins Server
+
+- Install kubectl:
+  ```bash
+  sudo snap install kubectl --classic
+  ```
+
+---
+
+### 15) Install kubectl on the Server Instance
+
+- Install kubectl:
+  ```bash
+  sudo snap install kubectl --classic
+  ```
+
+---
+
+### 16) Update kubeconfig for EKS
+
+- Update the kubeconfig to connect to the EKS cluster:
+  ```bash
+  aws eks --region ap-south-1 update-kubeconfig --name devopsshack-cluster
+  ```
+
