@@ -8,7 +8,7 @@ pipeline {
     }
     
     environment {
-        IMAGE_NAME = "adijaiswal/bankapp"
+        IMAGE_NAME = "harendrabarot/bankapp"
         TAG = "${params.DOCKER_TAG}"  // The image tag now comes from the parameter
         KUBE_NAMESPACE = 'webapps'
         SCANNER_HOME= tool 'sonar-scanner'
@@ -17,10 +17,30 @@ pipeline {
     stages {
         stage('Git Checkout') {
             steps {
-                git branch: 'main', credentialsId: 'git-cred', url: 'https://github.com/jaiswaladi246/3-Tier-NodeJS-MySql-Docker.git'
+                git branch: 'main', credentialsId: 'git-cred', url: 'https://github.com/Sudoharry/Blue-Green-Deployment.git'
             }
         }
         
+        stage('Complie') {
+            steps {
+                sh 'mvn complie'
+            }
+        }
+
+        stage('Tests') {
+            steps {
+                sh 'mvn test -DskipTests=true'
+            }
+        }
+
+           
+        stage('Trivy FS Scan') {
+            steps {
+                sh "trivy fs --format table -o fs.html ."
+            }
+        }
+        
+
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('sonar') {
@@ -28,13 +48,29 @@ pipeline {
                 }
             }
         }
-        
-        stage('Trivy FS Scan') {
+
+        stage('Quality Gate Check') {
             steps {
-                sh "trivy fs --format table -o fs.html ."
+               timeout(time: 1, unit: 'HOURS'){
+                    waitForQualityGate abortPipeline: false
+               }
             }
         }
+        stage('Build') {
+            steps {
+               sh 'mvn package -DskipTests=true'
+            }
+        }
+
+        stage('Publish Artifact to Nexus') {
+            steps {
+               withMaven(globalMavenSettingsConfig: 'maven-settings',jdk: '', maven: 'maven', mavenSettingsConfig: '', traceability: true) {
+                    sh 'mvn deploy -DskipTests=true'
+               }
+            }
+        }       
         
+     
         stage('Docker build') {
             steps {
                 script {
@@ -124,7 +160,7 @@ pipeline {
             steps {
                 script {
                     def verifyEnv = params.DEPLOY_ENV
-                    withKubeConfig(caCertificate: '', clusterName: 'devopsshack-cluster', contextName: '', credentialsId: 'k8-token', namespace: 'webapps', restrictKubeConfigAccess: false, serverUrl: 'https://46743932FDE6B34C74566F392E30CABA.gr7.ap-south-1.eks.amazonaws.com') {
+                    withKubeConfig(caCertificate: '', clusterName: 'bluegreen-cluster', contextName: '', credentialsId: 'k8-token', namespace: 'webapps', restrictKubeConfigAccess: false, serverUrl: 'https://46743932FDE6B34C74566F392E30CABA.gr7.ap-south-1.eks.amazonaws.com') {
                         sh """
                         kubectl get pods -l version=${verifyEnv} -n ${KUBE_NAMESPACE}
                         kubectl get svc bankapp-service -n ${KUBE_NAMESPACE}
