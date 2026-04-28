@@ -20,11 +20,15 @@ pipeline {
                 git branch: 'main', credentialsId: 'git-cred', url: 'https://github.com/kumar238/Blue-Green-Deployment.git'
             }
         }
-        
+        stage('Build') {
+            steps {
+                sh 'mvn clean package -DskipTests'
+            }
+        }
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('sonar') {
-                    sh 'mvn clean package -DskipTests sonar:sonar'
+                    sh 'mvn sonar:sonar'
                 }
             }
         }
