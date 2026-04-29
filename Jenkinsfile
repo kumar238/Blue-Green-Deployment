@@ -65,11 +65,30 @@ pipeline {
             }
         }
         
+
+        stage('Create PVC') {
+            steps {
+                 script {
+                     withKubeConfig(caCertificate: '', clusterName: 'devops-cluster', contextName: '', credentialsId: 'k8-token', namespace: 'webapps', restrictKubeConfigAccess: false, serverUrl: 'https://4703F73AC119377B7570250D7C61892E.gr7.us-east-1.eks.amazonaws.com') {
+                              sh '''
+                              if ! kubectl get pvc mysql-pvc -n webapps; then
+                                 kubectl apply -f mysql-pvc.yml -n ${KUBE_NAMESPACE}
+                              else
+                                  echo "PVC already exists"
+                              fi
+                              '''
+                         }
+                   }
+            }
+        }
         stage('Deploy MySQL Deployment and Service') {
             steps {
                 script {
                     withKubeConfig(caCertificate: '', clusterName: 'devops-cluster', contextName: '', credentialsId: 'k8-token', namespace: 'webapps', restrictKubeConfigAccess: false, serverUrl: 'https://4703F73AC119377B7570250D7C61892E.gr7.us-east-1.eks.amazonaws.com') {
-                        sh "kubectl apply -f mysql-ds.yml -n ${KUBE_NAMESPACE}"  // Ensure you have the MySQL deployment YAML ready
+                        sh '''
+                        kubectl apply -f mysql-ds.yml -n webapps
+                        kubectl rollout status deployment/mysql -n webapps
+                        '''  // Ensure you have the MySQL deployment YAML ready
                     }
                 }
             }
