@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Print Passbook - Goldencat Bank</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #000000, #ffd700);
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .navbar-custom {
+            background-color: rgba(0, 0, 0, 0.7);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .navbar-custom a {
+            color: #ffffff !important;
+        }
+
+        .navbar-custom .navbar-brand {
+            font-weight: bold;
+        }
+
+        .passbook-container {
+            max-width: 1000px;
+            margin: 90px auto 40px;
+        }
+
+        .passbook-card {
+            background-color: rgba(0, 0, 0, 0.82);
+            border: 1px solid rgba(255, 215, 0, 0.5);
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            padding: 25px;
+        }
+
+        .passbook-header {
+            border-bottom: 2px solid #ffd700;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+        }
+
+        .account-summary {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .table-striped td, .table-striped th {
+            color: #ffffff;
+            border-bottom: 1px solid #ffd700;
+            padding: 12px;
+        }
+
+        .table-striped th {
+            background-color: rgba(255, 215, 0, 0.2);
+        }
+
+        .text-success {
+            color: #28a745 !important;
+            font-weight: bold;
+        }
+
+        .text-danger {
+            color: #dc3545 !important;
+            font-weight: bold;
+        }
+
+        .custom-link {
+            color: #ffd700;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .custom-link:hover {
+            color: #ffecb3;
+            text-decoration: underline;
+        }
+
+        .btn-print {
+            background-color: #ffd700;
+            border: none;
+            color: #000000;
+            font-weight: bold;
+        }
+
+        .btn-print:hover {
+            background-color: #ffecb3;
+            color: #000000;
+        }
+
+        @media print {
+            body {
+                background: #ffffff;
+                color: #000000;
+            }
+
+            .navbar-custom,
+            .print-actions {
+                display: none !important;
+            }
+
+            .passbook-container {
+                margin: 0;
+                max-width: none;
+            }
+
+            .passbook-card {
+                background: #ffffff;
+                border: none;
+                box-shadow: none;
+                color: #000000;
+                padding: 0;
+            }
+
+            .account-summary {
+                background: #ffffff;
+                border: 1px solid #000000;
+            }
+
+            .table-striped td,
+            .table-striped th {
+                color: #000000;
+                border: 1px solid #000000;
+            }
+
+            .table-striped th {
+                background-color: #eeeeee !important;
+            }
+
+            .text-success,
+            .text-danger {
+                color: #000000 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-custom">
+    <a class="navbar-brand" href="#">Goldencat Bank</a>
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="/transactions">Transactions</a></li>
+        <li class="nav-item"><a class="nav-link" href="/passbook">Print Passbook</a></li>
+        <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+    </ul>
+</nav>
+
+<div class="container passbook-container">
+    <div class="passbook-card">
+        <div class="passbook-header d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="mb-1">Goldencat Bank Passbook</h2>
+                <p class="mb-0">Savings Account Statement</p>
+            </div>
+            <button type="button" class="btn btn-print print-actions" onclick="window.print()">Print Passbook</button>
+        </div>
+
+        <div class="account-summary row">
+            <div class="col-md-4">
+                <strong>Account Holder:</strong>
+                <span th:text="${account.username}"></span>
+            </div>
+            <div class="col-md-4">
+                <strong>Account Number:</strong>
+                <span th:text="${account.id}"></span>
+            </div>
+            <div class="col-md-4">
+                <strong>Current Balance:</strong>
+                $<span th:text="${account.balance}"></span>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Transaction ID</th>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${transactions.isEmpty()}">
+                    <td colspan="4" class="text-center">No transactions available.</td>
+                </tr>
+                <tr th:each="transaction : ${transactions}" th:with="credit=${transaction.type.contains('Transfer In') || transaction.type == 'Deposit'}">
+                    <td th:text="${transaction.id}"></td>
+                    <td th:text="${transaction.timestamp}"></td>
+                    <td th:text="${transaction.type}"></td>
+                    <td th:classappend="${credit} ? 'text-success' : 'text-danger'">
+                        <span th:text="${credit ? '+$' + transaction.amount : '-$' + transaction.amount}"></span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p class="text-center print-actions mb-0">
+            <a href="/dashboard" class="custom-link">Back to Dashboard</a>
+        </p>
+    </div>
+</div>
+
+</body>
+</html>
