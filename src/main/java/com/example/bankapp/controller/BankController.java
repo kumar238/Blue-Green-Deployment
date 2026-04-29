@@ -79,6 +79,15 @@ public class BankController {
         return "transactions";
     }
 
+    @GetMapping("/passbook")
+    public String passbook(Model model) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Account account = accountService.findAccountByUsername(username);
+        model.addAttribute("account", account);
+        model.addAttribute("transactions", accountService.getTransactionHistory(account));
+        return "passbook";
+    }
+
     @PostMapping("/transfer")
     public String transferAmount(@RequestParam String toUsername, @RequestParam BigDecimal amount, Model model) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
