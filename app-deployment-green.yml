@@ -25,7 +25,7 @@ spec:
         - name: SPRING_DATASOURCE_USERNAME
           value: root
         - name: SPRING_DATASOURCE_PASSWORD
-          value: Test@123
+          value: root
         resources:
           requests:
             memory: "500Mi"
