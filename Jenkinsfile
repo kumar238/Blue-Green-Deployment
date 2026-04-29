@@ -72,7 +72,7 @@ pipeline {
                      withKubeConfig(caCertificate: '', clusterName: 'devops-cluster', contextName: '', credentialsId: 'k2-token', namespace: 'webapps', restrictKubeConfigAccess: false, serverUrl: 'https://4703F73AC119377B7570250D7C61892E.gr7.us-east-1.eks.amazonaws.com') {
                               sh '''
                               if ! kubectl get pvc mysql-pvc -n webapps; then
-                                 kubectl apply -f mysql-pvc.yml -n ${KUBE_NAMESPACE}
+                                 kubectl apply -f mysql-pvc.yml -n ${KUBE_NAMESPACE} --validate=false
                               else
                                   echo "PVC already exists"
                               fi
