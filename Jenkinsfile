@@ -22,13 +22,13 @@ pipeline {
         }
         stage('Build') {
             steps {
-                bat 'mvn clean package -DskipTests'
+                sh 'mvn clean package -DskipTests'
             }
         }
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('sonar') {
-                    bat 'mvn sonar:sonar'
+                    sh 'mvn sonar:sonar'
                 }
             }
         }
