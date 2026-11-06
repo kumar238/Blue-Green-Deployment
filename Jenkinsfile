@@ -42,9 +42,9 @@ pipeline {
         stage('Docker build') {
             steps {
                 script {
-                    withDockerRegistry(credentialsId: 'docker-cred') {
+                    
                         bat "docker build -t ${IMAGE_NAME}:${TAG} ."
-                    }
+                    
                 }
             }
         }
@@ -58,8 +58,10 @@ pipeline {
         stage('Docker Push Image') {
             steps {
                 script {
-                    withDockerRegistry(credentialsId: 'docker-cred') {
-                        bat "docker push ${IMAGE_NAME}:${TAG}"
+                    withEnv(["DOCKER_CONTEXT="]) {
+                        withDockerRegistry([credentialsId: 'docker-cred', url: 'https://docker.io']) {    
+                            bat "docker push ${IMAGE_NAME}:${TAG}"
+                        }
                     }
                 }
             }
