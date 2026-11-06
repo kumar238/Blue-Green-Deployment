@@ -51,7 +51,7 @@ pipeline {
         
         stage('Trivy Image Scan') {
             steps {
-                bat "trivy image --format table -o image.html ${IMAGE_NAME}:${TAG}"
+                bat "trivy image --format html --timeout 15m -o image.html ${IMAGE_NAME}:${TAG}"
             }
         }
         
