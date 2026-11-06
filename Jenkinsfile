@@ -35,7 +35,7 @@ pipeline {
         
         stage('Trivy FS Scan') {
             steps {
-                sh "trivy fs --format table -o fs.html ."
+                bat "trivy fs --format table -o fs.html ."
             }
         }
         
@@ -43,7 +43,7 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred') {
-                        sh "docker build -t ${IMAGE_NAME}:${TAG} ."
+                        bat "docker build -t ${IMAGE_NAME}:${TAG} ."
                     }
                 }
             }
@@ -51,7 +51,7 @@ pipeline {
         
         stage('Trivy Image Scan') {
             steps {
-                sh "trivy image --format table -o image.html ${IMAGE_NAME}:${TAG}"
+                bat "trivy image --format table -o image.html ${IMAGE_NAME}:${TAG}"
             }
         }
         
@@ -59,7 +59,7 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred') {
-                        sh "docker push ${IMAGE_NAME}:${TAG}"
+                        bat "docker push ${IMAGE_NAME}:${TAG}"
                     }
                 }
             }
@@ -70,7 +70,7 @@ pipeline {
             steps {
                  script {
                      withKubeConfig(caCertificate: '', clusterName: 'devops-cluster', contextName: '', credentialsId: 'k7-token', namespace: 'webapps', restrictKubeConfigAccess: false, serverUrl: 'https://4703F73AC119377B7570250D7C61892E.gr7.us-east-1.eks.amazonaws.com') {
-                              sh '''
+                              bat '''
                               if ! kubectl get pvc mysql-pvc -n webapps; then
                                  kubectl apply -f mysql-pvc.yml -n ${KUBE_NAMESPACE}
                               else
@@ -85,7 +85,7 @@ pipeline {
             steps {
                 script {
                     withKubeConfig(caCertificate: '', clusterName: 'devops-cluster', contextName: '', credentialsId: 'k7-token', namespace: 'webapps', restrictKubeConfigAccess: false, serverUrl: 'https://4703F73AC119377B7570250D7C61892E.gr7.us-east-1.eks.amazonaws.com') {
-                        sh '''
+                        bat '''
                         kubectl apply -f mysql-ds.yml -n webapps
                         
                         '''  // Ensure you have the MySQL deployment YAML ready
@@ -98,7 +98,7 @@ pipeline {
             steps {
                 script {
                     withKubeConfig(caCertificate: '', clusterName: 'devops-cluster', contextName: '', credentialsId: 'k7-token', namespace: 'webapps', restrictKubeConfigAccess: false, serverUrl: 'https://4703F73AC119377B7570250D7C61892E.gr7.us-east-1.eks.amazonaws.com') {
-                        sh """ if ! kubectl get svc bankapp-service -n ${KUBE_NAMESPACE}; then
+                        bat """ if ! kubectl get svc bankapp-service -n ${KUBE_NAMESPACE}; then
                                 kubectl apply -f bankapp-service.yml -n ${KUBE_NAMESPACE}
                               fi
                         """
@@ -118,7 +118,7 @@ pipeline {
                     }
 
                     withKubeConfig(caCertificate: '', clusterName: 'devops-cluster', contextName: '', credentialsId: 'k7-token', namespace: 'webapps', restrictKubeConfigAccess: false, serverUrl: 'https://4703F73AC119377B7570250D7C61892E.gr7.us-east-1.eks.amazonaws.com') {
-                        sh "kubectl apply -f ${deploymentFile} -n ${KUBE_NAMESPACE}"
+                        bat "kubectl apply -f ${deploymentFile} -n ${KUBE_NAMESPACE}"
                     }
                 }
             }
@@ -134,7 +134,7 @@ pipeline {
 
                     // Always switch traffic based on DEPLOY_ENV
                     withKubeConfig(caCertificate: '', clusterName: 'devops-cluster', contextName: '', credentialsId: 'k7-token', namespace: 'webapps', restrictKubeConfigAccess: false, serverUrl: 'https://4703F73AC119377B7570250D7C61892E.gr7.us-east-1.eks.amazonaws.com') {
-                        sh '''
+                        bat '''
                             kubectl patch service bankapp-service -p "{\\"spec\\": {\\"selector\\": {\\"app\\": \\"bankapp\\", \\"version\\": \\"''' + newEnv + '''\\"}}}" -n ${KUBE_NAMESPACE}
                         '''
                     }
@@ -148,7 +148,7 @@ pipeline {
                 script {
                     def verifyEnv = params.DEPLOY_ENV
                     withKubeConfig(caCertificate: '', clusterName: 'devops-cluster', contextName: '', credentialsId: 'k7-token', namespace: 'webapps', restrictKubeConfigAccess: false, serverUrl: 'https://4703F73AC119377B7570250D7C61892E.gr7.us-east-1.eks.amazonaws.com') {
-                        sh """
+                        bat """
                         kubectl get pods -l version=${verifyEnv} -n ${KUBE_NAMESPACE}
                         kubectl get svc bankapp-service -n ${KUBE_NAMESPACE}
                         """
