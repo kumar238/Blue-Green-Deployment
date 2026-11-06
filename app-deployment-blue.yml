@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: bankapp-blue
+  namespace: webapps         # 👈 Added to match your database namespace
 spec:
   replicas: 1
   selector:
@@ -21,7 +22,8 @@ spec:
         - containerPort: 8080
         env:
         - name: SPRING_DATASOURCE_URL
-          value: jdbc:mysql://mysql-service:3306/bankappdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+          // 👈 Switched protocol to postgresql, host to bank-postgres, and port to 5432
+          value: jdbc:postgresql://bank-postgres:5432/bankappdb
         - name: SPRING_DATASOURCE_USERNAME
           value: root
         - name: SPRING_DATASOURCE_PASSWORD
