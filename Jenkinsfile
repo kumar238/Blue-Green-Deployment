@@ -73,6 +73,7 @@ pipeline {
                  script {
                      withKubeConfig(credentialsId: 'k7-token', namespace: 'webapps') {
                               sh '''
+                              kubectl create namespace webapps || echo "Namespace webapps already exists"
                               if ! kubectl get pvc mysql-pvc -n webapps; then
                                  kubectl apply -f mysql-pvc.yml -n ${KUBE_NAMESPACE}
                               else
