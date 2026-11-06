@@ -1,47 +1,50 @@
----
-# MySQL Deployment with Resource Requests
+# PostgreSQL Deployment with Resource Requests
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mysql
+  name: bank-postgres
   namespace: webapps
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mysql
+      app: bank-postgres
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: mysql
+        app: bank-postgres
     spec:
       containers:
-      - name: mysql
-        image: mysql:8
+      - name: postgres
+        image: postgres:15
         ports:
-        - containerPort: 3306
+        - containerPort: 5432
         env:
-        - name: MYSQL_ROOT_PASSWORD
-          value: root
-        - name: MYSQL_DATABASE
+        - name: POSTGRES_DB
           value: bankappdb
+        - name: POSTGRES_USER
+          value: root
+        - name: POSTGRES_PASSWORD
+          value: root
         volumeMounts:
-        - name: mysql-storage
-          mountPath: /var/lib/mysql   # 🔥 IMPORTANT
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
       volumes:
-      - name: mysql-storage
+      - name: postgres-storage
         persistentVolumeClaim:
           claimName: mysql-pvc        # 🔥 LINK PVC
 ---
-# MySQL Service
+# PostgreSQL Service
 apiVersion: v1
 kind: Service
 metadata:
-  name: mysql-service
+  name: bank-postgres
+  namespace: webapps
 spec:
   ports:
-  - port: 3306
+  - port: 5432
+    targetPort: 5432
   selector:
-    app: mysql
+    app: bank-postgres
