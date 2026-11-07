@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: bankapp
-        image: ramkuumar/blue-green:blue1 # Adjust the image tag for the blue version
+        image: ramkuumar/blue1-green1:blue1 # Adjust the image tag for the blue version
         ports:
         - containerPort: 8080
         env:
