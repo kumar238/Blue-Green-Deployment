@@ -22,7 +22,7 @@ spec:
         - containerPort: 8080
         env:
         - name: SPRING_DATASOURCE_URL
-          // 👈 Switched protocol to postgresql, host to bank-postgres, and port to 5432
+          
           value: jdbc:postgresql://bank-postgres:5432/bankappdb
         - name: SPRING_DATASOURCE_USERNAME
           value: root
