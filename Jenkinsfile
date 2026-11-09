@@ -17,7 +17,7 @@ pipeline {
     stages {
         stage('Git Checkout') {
             steps {
-                git branch: 'main', credentialsId: 'git-cred', url: 'https://github.com/kumar238/Blue-Green-Deployment.git'
+                git branch: 'mywork-1', credentialsId: 'git-cred', url: 'https://github.com/kumar238/Blue-Green-Deployment.git'
             }
         }
         stage('Build') {
